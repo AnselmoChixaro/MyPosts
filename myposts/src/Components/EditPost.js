@@ -1,9 +1,11 @@
 import React, { Component } from 'react'
-import { LoadPost, LoadCategories } from '../Actions';
+import { LoadPost, LoadCategories, PutPost, AddPost } from '../Actions';
 import { connect } from 'react-redux'
 import { withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import { Select, FormControl, InputLabel } from '@material-ui/core';
+import classNames from 'classnames'
+import SaveIcon from '@material-ui/icons/Save';
+import { Select, FormControl, InputLabel, Paper, Typography, Button } from '@material-ui/core';
 
 class EditPost extends Component {
 
@@ -13,24 +15,37 @@ class EditPost extends Component {
         author: '',
         body: '',
         category: '',
+        timestamp: Date.now(),
         commentCount: 0,
         deleted: false,
         voteScore: 0,
-        categories:[]
+        categories: [],
+        editing: false
     }
 
     componentDidMount() {
-        this.props.loadPost(this.props.match.params.postid)
+        if (this.props.match.params.postid) {
+            this.props.loadPost(this.props.match.params.postid)
+            this.setState({ editing: true })
+        }
+        else{
+            const id = "id";
+            const uuid = require('uuid/v4');
+            this.setState({
+                [id]: uuid()
+            });
+        }
+
         this.props.loadCategories()
     };
 
     componentWillReceiveProps(nextProp) {
-        if (this.props.post !== nextProp.post){
+        if (this.props.post !== nextProp.post) {
             this.setState(nextProp.post)
         }
 
-        if( this.props.categories !== nextProp.categories){
-            this.setState({categories: nextProp.categories})
+        if (this.props.categories !== nextProp.categories) {
+            this.setState({ categories: nextProp.categories })
         }
     }
 
@@ -40,12 +55,31 @@ class EditPost extends Component {
         });
     }
 
+    handleEdit = () => {
+
+        if (this.state.editing) {
+            this.props.editPost(this.state);
+            if (this.props.history)
+                this.props.history.goBack();
+        }else{
+            this.props.addPost(this.state);
+            if (this.props.history)
+                this.props.history.goBack();
+        }
+    }
+
     render() {
         const { classes } = this.props;
-        console.log(this.state)
         return (
             <div>
-                <form className={classes.container}>
+                <div>
+                    <Paper className={classes.root} elevation={1}>
+                        <Typography variant="headline" component="h3">
+                            Editing Post
+                        </Typography>
+                    </Paper>
+                </div>
+                <form className={classes.container} onSubmit={this.handleEdit}>
                     <TextField
                         id="title"
                         label="Title"
@@ -63,6 +97,7 @@ class EditPost extends Component {
                         value={this.state.author}
                         onChange={this.handleChange('author')}
                         margin="normal"
+                        disabled={this.state.editing}
                     />
                     <TextField
                         id="body"
@@ -78,6 +113,7 @@ class EditPost extends Component {
                     <FormControl className={classes.formControl}>
                         <InputLabel shrink>Category</InputLabel>
                         <Select
+                            disabled={this.state.editing}
                             value={this.state.category}
                             onChange={this.handleChange('category')}
                             className={classes.selectEmpty}
@@ -87,6 +123,10 @@ class EditPost extends Component {
                             ))}
                         </Select>
                     </FormControl>
+                    <Button variant="contained" size="small" className={classes.button} onClick={this.handleEdit}>
+                        <SaveIcon className={classNames(classes.leftIcon, classes.iconSmall)} />
+                        Save
+                    </Button>
                 </form>
             </div>
         )
@@ -103,7 +143,9 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         loadPost: (data) => dispatch(LoadPost(data)),
-        loadCategories: () => dispatch(LoadCategories())
+        loadCategories: () => dispatch(LoadCategories()),
+        editPost: (data) => dispatch(PutPost(data)),
+        addPost: (data) => dispatch(AddPost(data)),
     }
 }
 
@@ -125,6 +167,23 @@ const styles = theme => ({
     formControl: {
         margin: theme.spacing.unit,
         minWidth: 120,
+    },
+    root: {
+        ...theme.mixins.gutters(),
+        paddingTop: theme.spacing.unit * 2,
+        paddingBottom: theme.spacing.unit * 2,
+    },
+    button: {
+        margin: theme.spacing.unit,
+    },
+    leftIcon: {
+        marginRight: theme.spacing.unit,
+    },
+    rightIcon: {
+        marginLeft: theme.spacing.unit,
+    },
+    iconSmall: {
+        fontSize: 20,
     },
 });
 
