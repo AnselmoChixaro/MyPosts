@@ -6,6 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import classNames from 'classnames'
 import SaveIcon from '@material-ui/icons/Save';
 import { Select, FormControl, InputLabel, Paper, Typography, Button } from '@material-ui/core';
+import { Redirect } from 'react-router-dom'
 
 class EditPost extends Component {
 
@@ -20,7 +21,8 @@ class EditPost extends Component {
         deleted: false,
         voteScore: 0,
         categories: [],
-        editing: false
+        editing: false,
+        redirect: false,
     }
 
     componentDidMount() {
@@ -28,7 +30,7 @@ class EditPost extends Component {
             this.props.loadPost(this.props.match.params.postid)
             this.setState({ editing: true })
         }
-        else{
+        else {
             const id = "id";
             const uuid = require('uuid/v4');
             this.setState({
@@ -42,6 +44,9 @@ class EditPost extends Component {
     componentWillReceiveProps(nextProp) {
         if (this.props.post !== nextProp.post) {
             this.setState(nextProp.post)
+            if (!nextProp.post.id){
+                this.setState({ redirect: true })
+            }
         }
 
         if (this.props.categories !== nextProp.categories) {
@@ -60,8 +65,8 @@ class EditPost extends Component {
         if (this.state.editing) {
             this.props.editPost(this.state);
             if (this.props.history)
-                this.props.history.goBack();
-        }else{
+                this.props.history.goBack()
+        } else {
             this.props.addPost(this.state);
             if (this.props.history)
                 this.props.history.goBack();
@@ -70,13 +75,24 @@ class EditPost extends Component {
 
     render() {
         const { classes } = this.props;
+        const { editing } = this.state;
+
+        if( this.state.redirect )
+            return <Redirect to="/404/NoPost"/>
+
         return (
             <div>
                 <div>
                     <Paper className={classes.root} elevation={1}>
-                        <Typography variant="headline" component="h3">
-                            Editing Post
-                        </Typography>
+                        {
+                            editing ?
+                                <Typography variant="headline" component="h3">
+                                    Editing Post
+                                </Typography> :
+                                <Typography variant="headline" component="h3">
+                                    Adding Post
+                                </Typography>
+                        }
                     </Paper>
                 </div>
                 <form className={classes.container} onSubmit={this.handleEdit}>

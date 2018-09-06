@@ -90,6 +90,21 @@ class Comment extends React.Component {
                     <CardContent>
                         <div>
                             {
+                                adding ?
+                                    <TextField
+                                        value={this.state.author}
+                                        fullWidth
+                                        placeholder="Enter your name here"
+                                        onChange={this.handleChange('author')}
+                                    />
+                                    :
+                                    <Typography color="textSecondary" className={classes.author}>
+                                        Author: {this.state.author}
+                                    </Typography>
+                            }
+                        </div>
+                        <div>
+                            {
                                 editing ?
                                     <TextField
                                         value={this.state.body}
@@ -101,21 +116,6 @@ class Comment extends React.Component {
                                     :
                                     <Typography gutterBottom variant="headline" component="h2">
                                         {this.state.body}
-                                    </Typography>
-                            }
-                        </div>
-                        <div>
-                            {
-                                adding ?
-                                    <TextField
-                                        value={this.state.author}
-                                        fullWidth
-                                        placeholder="Enter your name here"
-                                        onChange={this.handleChange('author')}
-                                    />
-                                    :
-                                    <Typography component="p">
-                                        Author: {this.state.author}
                                     </Typography>
                             }
                         </div>
@@ -164,6 +164,10 @@ const styles = theme => ({
     typography: {
         marginLeft: 'auto'
     },
+    author: {
+        marginBottom: 16,
+        fontSize: 14,
+    }
 });
 
 function mapDispatchToProps(dispatch) {

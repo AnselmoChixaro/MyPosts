@@ -30,8 +30,7 @@ const styles = {
 class Category extends Component {
     render() {
         const postByCategoryLink = {
-            pathname: `/category/${this.props.category.name}`,
-            category: this.props.category.name
+            pathname: `/${this.props.category.name}`
         };
 
         return (

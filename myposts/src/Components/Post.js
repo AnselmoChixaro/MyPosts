@@ -7,8 +7,8 @@ import Typography from '@material-ui/core/Typography';
 import ArrowDropUp from '@material-ui/icons/ArrowDropUp'
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown'
 import DeleteIcon from '@material-ui/icons/Delete';
-import { IconButton } from '@material-ui/core';
-import { Link } from 'react-router-dom'
+import { IconButton, Divider } from '@material-ui/core';
+import { Link } from 'react-router-relative-link'
 import { Vote, DeletePost } from '../Actions';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux'
@@ -53,29 +53,35 @@ class Post extends Component {
 
     render() {
         const editPostLink = {
-            pathname: `/post/edit/${this.state.id}`,
-            postid: this.state.id
+            pathname: `/post/edit/${this.state.id}`
         };
 
         const commentPostLink = {
-            pathname: `/post/comments/${this.state.id}`,
-            postid: this.state.id
+            pathname: `/${this.state.category}/${this.state.id}`
         }
 
-        const { classes, disabled } = this.props
+        const { classes, disabled, show } = this.props
         const date = new Date(this.state.timestamp)
-        const displayedDate = "Created on:" + ((date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear());    
+        const displayedDate = "Created on:" + ((date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear());
+        const commentCount = this.props.commentCount ? this.props.commentCount : this.state.commentCount;
+        const commentLabel = this.state.commentCount === 1 ? "Comment" : "Comments";
 
         return (
             <div>
                 <Card className={classes.card}>
                     <CardContent>
+                        <Typography color="textSecondary" className={classes.author}>
+                            Author: {this.state.author}
+                        </Typography>
                         <Typography gutterBottom variant="headline" component="h2">
                             {this.state.title}
                         </Typography>
-                        <Typography component="p">
-                            {this.state.title}
-                        </Typography>
+                        <Divider />
+                        {
+                            show ? <Typography paragraph>
+                            {this.state.body}
+                            </Typography> : null
+                        }
                     </CardContent>
                     <CardActions>
                         <Button size="small" color="primary">
@@ -84,6 +90,9 @@ class Post extends Component {
                         <Button size="small" color="primary" disabled={disabled}>
                             <Link to={commentPostLink}>Comment</Link>
                         </Button>
+                        <Typography component="p">
+                            {commentCount} {commentLabel}
+                        </Typography>
                         <IconButton onClick={this.handleVote("upVote")}>
                             <ArrowDropUp></ArrowDropUp>
                         </IconButton>
@@ -112,6 +121,13 @@ const styles = theme => ({
     typography: {
         marginLeft: 'auto'
     },
+    bottomTypography: {
+        position: 'static'
+    },
+    author: {
+        marginBottom: 16,
+        fontSize: 14,
+    }
 });
 
 function mapDispatchToProps(dispatch) {

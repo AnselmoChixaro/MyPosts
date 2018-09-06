@@ -5,13 +5,15 @@ import Post from './Post';
 import Comment from './Comment'
 import { List, ListItem, Button, withStyles, Divider } from '@material-ui/core';
 import AddIcon from '@material-ui/icons/Add';
+import { Redirect } from 'react-router-dom'
 
 class Comments extends React.Component {
 
     state = {
         post: {},
         comments: [],
-        adding: false
+        adding: false,
+        redirect: false
     }
 
     componentDidMount() {
@@ -24,6 +26,10 @@ class Comments extends React.Component {
             this.setState(() => ({
                 post: nextProp.post
             }))
+
+            if (!nextProp.post.id){
+                this.setState({ redirect: true })
+            }
         }
 
         if (this.props.comments !== nextProp.comments) {
@@ -43,22 +49,32 @@ class Comments extends React.Component {
 
     handleDeleteComment = (event) => {
 
-        console.log(event)
-
         let comments = [...this.state.comments].filter((comment) => comment.id !== event.id);
+
+        let post = this.state.post;
+
+        post.commentCount = post.commentCount - 1;
 
         this.setState(() => ({
             comments: comments,
+            post: post,
             adding: false
         }))
     }
 
     handleAddComment = (event) => {
 
+
+
         let comments = [...this.state.comments].concat(event);
+        
+        let post = this.state.post;
+
+        post.commentCount = post.commentCount + 1;
 
         this.setState(() => ({
             comments: comments,
+            post: post,
             adding: false
         }))
     }
@@ -67,10 +83,13 @@ class Comments extends React.Component {
 
         const { classes } = this.props
 
+        if( this.state.redirect )
+            return <Redirect to="/404/NoPost"/>
+
         return (
             <div>
                 <div>
-                    <Post post={this.state.post} disabled={true} />
+                    <Post post={this.state.post} show={true} disabled={true} commentCount={this.state.post.commentCount} />
                 </div>
                 <div>
                     <List>

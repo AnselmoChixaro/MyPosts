@@ -108,7 +108,7 @@ class Posts extends Component {
                         {this.state.posts.map((post) => (
                             <div key={post.id}>
                                 <ListItem key={post.id}>
-                                    <Post post={post} handlePostDeleted={this.handlePostDeleted} disabled={false}></Post>
+                                    <Post post={post} show={false} handlePostDeleted={this.handlePostDeleted} disabled={false}></Post>
                                 </ListItem>
                                 <Divider />
                             </div>
