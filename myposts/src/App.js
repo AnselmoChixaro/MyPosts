@@ -2,11 +2,13 @@ import React from 'react';
 import TopBar from './Components/TopBar';
 import Main from './Components/Main';
 import { Switch, Route } from 'react-router-dom'
+import { withRouter } from 'react-router'
 import Posts from './Components/Posts'
 import EditPost from './Components/EditPost'
 import Comments from './Components/Comments'
 
-class App extends React.Component {    
+class App extends React.Component {     
+
     render() {
 
         const NoPost = ({ location }) => (
@@ -18,7 +20,7 @@ class App extends React.Component {
         return (
             <div>
                 <div>
-                    <TopBar />
+                    <TopBar props={this.props} />
                 </div>
                 <div>
                  <Switch>   
@@ -35,4 +37,4 @@ class App extends React.Component {
     }
 }
 
-export default App
+export default withRouter(App)

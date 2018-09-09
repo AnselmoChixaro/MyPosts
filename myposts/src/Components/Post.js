@@ -12,6 +12,7 @@ import { Link } from 'react-router-relative-link'
 import { Vote, DeletePost } from '../Actions';
 import { withStyles } from '@material-ui/core/styles';
 import { connect } from 'react-redux'
+import { withRouter } from 'react-router'
 
 class Post extends Component {
 
@@ -51,6 +52,11 @@ class Post extends Component {
         this.props.handlePostDeleted(this.state);
     }
 
+    handleClickPost = param => event => {
+        console.log("Card Clicked")
+        this.props.history.push(param, this.state)
+    }
+
     render() {
         const editPostLink = {
             pathname: `/post/edit/${this.state.id}`
@@ -60,6 +66,7 @@ class Post extends Component {
             pathname: `/${this.state.category}/${this.state.id}`
         }
 
+        const hand = { cursor: "pointer" };
         const { classes, disabled, show } = this.props
         const date = new Date(this.state.timestamp)
         const displayedDate = "Created on:" + ((date.getMonth() + 1) + "/" + date.getDate() + "/" + date.getFullYear());
@@ -69,7 +76,7 @@ class Post extends Component {
         return (
             <div>
                 <Card className={classes.card}>
-                    <CardContent>
+                    <CardContent onClick={this.handleClickPost(commentPostLink)} style={hand}>
                         <Typography color="textSecondary" className={classes.author}>
                             Author: {this.state.author}
                         </Typography>
@@ -79,7 +86,7 @@ class Post extends Component {
                         <Divider />
                         {
                             show ? <Typography paragraph>
-                            {this.state.body}
+                                {this.state.body}
                             </Typography> : null
                         }
                     </CardContent>
@@ -137,4 +144,4 @@ function mapDispatchToProps(dispatch) {
     }
 }
 
-export default withStyles(styles)(connect(null, mapDispatchToProps)(Post))
+export default withStyles(styles)(withRouter(connect(null, mapDispatchToProps)(Post)))
